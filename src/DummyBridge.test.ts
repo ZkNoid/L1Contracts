@@ -1,26 +1,19 @@
-import { Add } from './Add';
-import { Field, Mina, PrivateKey, PublicKey, AccountUpdate } from 'o1js';
-
-/*
- * This file specifies how to test the `Add` example smart contract. It is safe to delete this file and replace
- * with your own tests.
- *
- * See https://docs.minaprotocol.com/zkapps for more info.
- */
+import { DummyBridge } from './DummyBridge';
+import { Mina, PrivateKey, PublicKey, AccountUpdate, UInt64 } from 'o1js';
 
 let proofsEnabled = false;
 
-describe('Add', () => {
+describe('Dummy bridge', () => {
   let deployerAccount: PublicKey,
     deployerKey: PrivateKey,
     senderAccount: PublicKey,
     senderKey: PrivateKey,
     zkAppAddress: PublicKey,
     zkAppPrivateKey: PrivateKey,
-    zkApp: Add;
+    zkApp: DummyBridge;
 
   beforeAll(async () => {
-    if (proofsEnabled) await Add.compile();
+    if (proofsEnabled) await DummyBridge.compile();
   });
 
   beforeEach(() => {
@@ -32,7 +25,7 @@ describe('Add', () => {
       Local.testAccounts[1]);
     zkAppPrivateKey = PrivateKey.random();
     zkAppAddress = zkAppPrivateKey.toPublicKey();
-    zkApp = new Add(zkAppAddress);
+    zkApp = new DummyBridge(zkAppAddress);
   });
 
   async function localDeploy() {
@@ -45,23 +38,25 @@ describe('Add', () => {
     await txn.sign([deployerKey, zkAppPrivateKey]).send();
   }
 
-  it('generates and deploys the `Add` smart contract', async () => {
-    await localDeploy();
-    const num = zkApp.num.get();
-    expect(num).toEqual(Field(1));
-  });
-
-  it('correctly updates the num state on the `Add` smart contract', async () => {
+  it('Test bridging', async () => {
     await localDeploy();
 
-    // update transaction
-    const txn = await Mina.transaction(senderAccount, () => {
-      zkApp.update();
+    console.log(zkApp.account.balance.getAndRequireEquals().toString());
+
+    const amountToBridge = new UInt64(1 * 10**9);
+    
+    const initialZkAppBalance = zkApp.totalBridged.getAndRequireEquals();
+
+    const txn = await Mina.transaction(deployerAccount, () => {
+      zkApp.bridge(amountToBridge);
     });
-    await txn.prove();
-    await txn.sign([senderKey]).send();
 
-    const updatedNum = zkApp.num.get();
-    expect(updatedNum).toEqual(Field(3));
+    await txn.prove();
+    await txn.sign([deployerKey, zkAppPrivateKey]).send();
+
+    console.log(zkApp.account.balance.getAndRequireEquals().toString());
+
+    expect(zkApp.totalBridged.getAndRequireEquals().sub(initialZkAppBalance)).toEqual(amountToBridge);
+
   });
 });
