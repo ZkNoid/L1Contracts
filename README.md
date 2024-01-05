@@ -1,6 +1,6 @@
-# Mina zkApp: Zknoidcontractsl1
+# ZkNoid L1 contracts
 
-This template uses TypeScript.
+ZkNoid uses interplay of mina mainnet and protokit networks. This repository contains L1 contracts of the ZkNoid infrastructure
 
 ## How to build
 
