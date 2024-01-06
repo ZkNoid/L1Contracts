@@ -1,4 +1,13 @@
 {
   "version": 1,
-  "deployAliases": {}
+  "deployAliases": {
+    "testworld": {
+      "url": "https://proxy.testworld.minaexplorer.com/graphql",
+      "keyPath": "keys/testworld.json",
+      "feepayerKeyPath": "/Users/andrey/.cache/zkapp-cli/keys/deployacc.json",
+      "feepayerAlias": "deployacc",
+      "fee": "1",
+      "smartContract": "DummyBridge"
+    }
+  }
 }

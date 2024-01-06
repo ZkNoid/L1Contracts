@@ -41,8 +41,6 @@ describe('Dummy bridge', () => {
   it('Test bridging', async () => {
     await localDeploy();
 
-    console.log(zkApp.account.balance.getAndRequireEquals().toString());
-
     const amountToBridge = new UInt64(1 * 10**9);
     
     const initialZkAppBalance = zkApp.totalBridged.getAndRequireEquals();
@@ -53,8 +51,6 @@ describe('Dummy bridge', () => {
 
     await txn.prove();
     await txn.sign([deployerKey, zkAppPrivateKey]).send();
-
-    console.log(zkApp.account.balance.getAndRequireEquals().toString());
 
     expect(zkApp.totalBridged.getAndRequireEquals().sub(initialZkAppBalance)).toEqual(amountToBridge);
 
