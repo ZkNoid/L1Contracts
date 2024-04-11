@@ -15,21 +15,21 @@ export class DummyBridge extends SmartContract {
 
   @state(UInt64) totalBridged = State<UInt64>();
 
-  @method bridge(amount: UInt64) {
-    let senderUpdate = AccountUpdate.create(this.sender);
+  @method async bridge(amount: UInt64) {
+    let senderUpdate = AccountUpdate.create(this.sender.getAndRequireSignature());
     senderUpdate.requireSignature();
     senderUpdate.send({ to: this, amount });
     this.account.balance.getAndRequireEquals();
 
     this.totalBridged.set(this.totalBridged.getAndRequireEquals().add(amount));
-    this.emitEvent("bridged", new BridgingInfo({address: this.sender, amount}));
+    this.emitEvent("bridged", new BridgingInfo({address: this.sender.getAndRequireSignature(), amount}));
   }
 
-  @method unbridge() {
-    this.sender.assertEquals(PublicKey.fromBase58(OWNER));
+  @method async unbridge() {
+    this.sender.getAndRequireSignature().assertEquals(PublicKey.fromBase58(OWNER));
     const amount = this.account.balance.getAndRequireEquals();
 
-    this.send({to: this.sender, amount });
+    this.send({to: this.sender.getAndRequireSignature(), amount });
 
     this.totalBridged.set(new UInt64(0));
 

@@ -69,7 +69,7 @@ await DummyBridge.compile();
 try {
   // call update() and send transaction
   console.log('build transaction and create proof...');
-  let tx = await Mina.transaction({ sender: feepayerAddress, fee }, () => {
+  let tx = await Mina.transaction({ sender: feepayerAddress, fee }, async () => {
     zkApp.bridge(amountToBridge);
   });
   await tx.prove();
@@ -78,13 +78,13 @@ try {
 } catch (err) {
   console.log(err);
 }
-if (sentTx?.hash() !== undefined) {
+if (sentTx?.hash !== undefined) {
   console.log(`
 Success! Update transaction sent.
 
 Your smart contract state will be updated
 as soon as the transaction is included in a block:
-${getTxnUrl(config.url, sentTx.hash())}
+${getTxnUrl(config.url, sentTx.hash)}
 `);
 }
 

@@ -29,7 +29,7 @@ describe('Dummy bridge', () => {
   });
 
   async function localDeploy() {
-    const txn = await Mina.transaction(deployerAccount, () => {
+    const txn = await Mina.transaction(deployerAccount, async () => {
       AccountUpdate.fundNewAccount(deployerAccount);
       zkApp.deploy();
     });
@@ -45,7 +45,7 @@ describe('Dummy bridge', () => {
     
     const initialZkAppBalance = zkApp.totalBridged.getAndRequireEquals();
 
-    const txn = await Mina.transaction(deployerAccount, () => {
+    const txn = await Mina.transaction(deployerAccount, async () => {
       zkApp.bridge(amountToBridge);
     });
 
