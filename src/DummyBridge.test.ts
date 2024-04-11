@@ -1,7 +1,9 @@
 import { DummyBridge } from './DummyBridge';
-import { Mina, PrivateKey, PublicKey, AccountUpdate, UInt64 } from 'o1js';
+import { Mina, PrivateKey, PublicKey, AccountUpdate, UInt64, fetchAccount, Cache } from 'o1js';
+import fs from 'fs';
+import path from 'path';
 
-let proofsEnabled = false;
+let proofsEnabled = true;
 
 describe('Dummy bridge', () => {
   let deployerAccount: PublicKey,
@@ -13,7 +15,10 @@ describe('Dummy bridge', () => {
     zkApp: DummyBridge;
 
   beforeAll(async () => {
-    if (proofsEnabled) await DummyBridge.compile();
+    if (proofsEnabled) await DummyBridge.compile({cache: Cache.FileSystem('./cache')});
+    console.log(fs.readdir('./cache', (err, files) => {
+      console.log(files.filter(x => !x.endsWith('.header')))
+    }))
   });
 
   beforeEach(() => {
@@ -54,5 +59,8 @@ describe('Dummy bridge', () => {
 
     expect(zkApp.totalBridged.getAndRequireEquals().sub(initialZkAppBalance)).toEqual(amountToBridge);
 
+    await fetchAccount({
+      publicKey: PublicKey.fromBase58("B62qrcVV4rxsUKLtaPEf2yeErxdgVz5im7AsBKqz2WmkgJZVnCWfuao")
+    });
   });
 });
