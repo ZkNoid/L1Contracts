@@ -8,6 +8,16 @@ ZkNoid uses interplay of mina mainnet and protokit networks. This repository con
 npm run build
 ```
 
+## How to deploy
+
+```sh
+zk deploy
+```
+
+## Deployments
+
+- Berkley: `B62qjTmjVvvXnYCWSiEc1eVAz8vWVzJUK4xtBu7oq5ZuNT7aqAnAVub`
+
 ## How to run tests
 
 ```sh

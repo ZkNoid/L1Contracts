@@ -1,7 +1,9 @@
 import { DummyBridge } from './DummyBridge';
-import { Mina, PrivateKey, PublicKey, AccountUpdate, UInt64 } from 'o1js';
+import { Mina, PrivateKey, PublicKey, AccountUpdate, UInt64, fetchAccount, Cache } from 'o1js';
+import fs from 'fs';
+import path from 'path';
 
-let proofsEnabled = false;
+let proofsEnabled = true;
 
 describe('Dummy bridge', () => {
   let deployerAccount: PublicKey,
@@ -13,15 +15,18 @@ describe('Dummy bridge', () => {
     zkApp: DummyBridge;
 
   beforeAll(async () => {
-    if (proofsEnabled) await DummyBridge.compile();
+    if (proofsEnabled) await DummyBridge.compile({cache: Cache.FileSystem('./cache')});
+    console.log(fs.readdir('./cache', (err, files) => {
+      console.log(files.filter(x => !x.endsWith('.header')))
+    }))
   });
 
-  beforeEach(() => {
-    const Local = Mina.LocalBlockchain({ proofsEnabled });
+  beforeEach(async () => {
+    const Local = await Mina.LocalBlockchain({ proofsEnabled });
     Mina.setActiveInstance(Local);
-    ({ privateKey: deployerKey, publicKey: deployerAccount } =
+    ({ key: deployerKey } =
       Local.testAccounts[0]);
-    ({ privateKey: senderKey, publicKey: senderAccount } =
+    ({ key: senderKey } =
       Local.testAccounts[1]);
     zkAppPrivateKey = PrivateKey.random();
     zkAppAddress = zkAppPrivateKey.toPublicKey();
@@ -54,5 +59,8 @@ describe('Dummy bridge', () => {
 
     expect(zkApp.totalBridged.getAndRequireEquals().sub(initialZkAppBalance)).toEqual(amountToBridge);
 
+    await fetchAccount({
+      publicKey: PublicKey.fromBase58("B62qrcVV4rxsUKLtaPEf2yeErxdgVz5im7AsBKqz2WmkgJZVnCWfuao")
+    });
   });
 });

@@ -8,6 +8,24 @@
       "feepayerAlias": "deployacc",
       "fee": "1",
       "smartContract": "DummyBridge"
+    },
+    "berkeley": {
+      "networkId": "testnet",
+      "url": "https://api.minascan.io/node/berkeley/v1/graphql",
+      "keyPath": "keys/berkley.json",
+      "feepayerKeyPath": "/Users/andrey/.cache/zkapp-cli/keys/deployacc.json",
+      "feepayerAlias": "deployacc",
+      "fee": "0.1",
+      "smartContract": "DummyBridge"
+    },
+    "berkeley2": {
+      "networkId": "testnet",
+      "url": "https://api.minascan.io/node/berkeley/v1/graphql",
+      "keyPath": "keys/berkeley.json",
+      "feepayerKeyPath": "/Users/andrey/.cache/zkapp-cli/keys/test2.json",
+      "feepayerAlias": "test2",
+      "fee": "0.1",
+      "smartContract": "DummyBridge"
     }
   }
 }
